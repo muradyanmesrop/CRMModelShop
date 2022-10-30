@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,7 @@ namespace CrmUi
     public partial class ModelForm : Form
     {
         ShopComputerModel model = new ShopComputerModel();
+        List<CashBoxView> cashDeskes;
         public ModelForm()
         {
             InitializeComponent();
@@ -21,7 +23,7 @@ namespace CrmUi
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var cashDeskes = new List<CashBoxView>();
+            cashDeskes = new List<CashBoxView>();
             for (int i = 0; i < model.CashDesks.Count; i++)
             {
                 var box = new CashBoxView(model.CashDesks[i], i, 10, 26 * i);
@@ -32,11 +34,6 @@ namespace CrmUi
                 Controls.Add(box.LeaveCoustomersCount);
             }
             model.Start();
-        }
-
-        private void ModelForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            model.Stop();
         }
 
         private void ModelForm_Load(object sender, EventArgs e)
@@ -53,6 +50,23 @@ namespace CrmUi
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             model.CustomerSpeed = (int)numericUpDown1.Value;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            model.Stop();
+            for (int i = 0; i < model.CashDesks.Count; i++)
+            {
+                Controls.Remove(cashDeskes[i].CashDeskName);
+                Controls.Remove(cashDeskes[i].Price);
+                Controls.Remove(cashDeskes[i].QueueLength);
+                Controls.Remove(cashDeskes[i].LeaveCoustomersCount);
+            }
+        }
+
+        private void ModelForm_FormClosing(object sender, FormClosingEventArgs e)
+        {            
+            button2_Click(sender, e);
         }
     }
 }
